@@ -1,44 +1,43 @@
-name: Generate MIDI File
-
 on:
   workflow_dispatch:
     inputs:
       key:
         description: 'Musical key to use for the melody'
         required: true
+        default: 'A Minor'
+        options:
+          A Minor: 'A Minor'
+          A# Minor: 'A# Minor'
+          B Minor: 'B Minor'
+          C Minor: 'C Minor'
+          C# Minor: 'C# Minor'
+          D Minor: 'D Minor'
+          D# Minor: 'D# Minor'
+          E Minor: 'E Minor'
+          F Minor: 'F Minor'
+          F# Minor: 'F# Minor'
+          G Minor: 'G Minor'
+          G# Minor: 'G# Minor'
       note-lengths:
         description: 'Lengths of notes to use (comma-separated list)'
         required: true
+        default: '8,16'
+        options:
+          16th, 8th: '16,8'
+          16th, 8th, 8th: '16,8,8'
+          8th, 16th, 8th: '8,16,8'
+          8th, 8th, 16th: '8,8,16'
       num-bars:
         description: 'Number of bars of music to create'
         required: true
+        default: '2'
+        options:
+          1: '1'
+          2: '2'
+          3: '3'
+          4: '4'
+          5: '5'
       filename:
         description: 'Name of the output MIDI file'
         required: true
-
-jobs:
-  generate-midi-file:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.x'
-
-    - name: Build and run MIDI writer
-      run: dotnet run --project MidiWriter.csproj -- "$KEY" "$NOTE_LENGTHS" "$NUM_BARS" "$FILENAME"
-
-      env:
-        KEY: ${{ github.event.inputs.key }}
-        NOTE_LENGTHS: ${{ github.event.inputs.note-lengths }}
-        NUM_BARS: ${{ github.event.inputs.num-bars }}
-        FILENAME: ${{ github.event.inputs.filename }}
-
-    - name: Upload MIDI file
-      uses: actions/upload-artifact@v2
-      with:
-        name: ${{ github.event.inputs.filename }}
-        path: ${{ github.workspace }}/${{ github.event.inputs.filename }}
+        default: 'output.mid'
