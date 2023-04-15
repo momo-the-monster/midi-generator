@@ -4,41 +4,30 @@ on:
   workflow_dispatch:
     inputs:
       key:
+        type: choice
         description: 'Musical key to use for the melody'
-        required: true
         default: 'A Minor'
         options:
-          A Minor: 'A Minor'
-          A# Minor: 'A# Minor'
-          B Minor: 'B Minor'
-          C Minor: 'C Minor'
-          C# Minor: 'C# Minor'
-          D Minor: 'D Minor'
-          D# Minor: 'D# Minor'
-          E Minor: 'E Minor'
-          F Minor: 'F Minor'
-          F# Minor: 'F# Minor'
-          G Minor: 'G Minor'
-          G# Minor: 'G# Minor'
+          - 'A Minor'
+          - 'A# Minor'
+          - 'B Minor'
+          - 'C Minor'
+          - 'C# Minor'
+          - 'D Minor'
+          - 'D# Minor'
+          - 'E Minor'
+          - 'F Minor'
+          - 'F# Minor'
+          - 'G Minor'
+          - 'G# Minor'
       note-lengths:
         description: 'Lengths of notes to use (comma-separated list)'
         required: true
         default: '8,16'
-        options:
-          16th, 8th: '16,8'
-          16th, 8th, 8th: '16,8,8'
-          8th, 16th, 8th: '8,16,8'
-          8th, 8th, 16th: '8,8,16'
       num-bars:
         description: 'Number of bars of music to create'
         required: true
         default: '2'
-        options:
-          1: '1'
-          2: '2'
-          3: '3'
-          4: '4'
-          5: '5'
       filename:
         description: 'Name of the output MIDI file'
         required: true
@@ -58,13 +47,16 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
+        working-directory: MidiWriter
 
       - name: Build project
         run: dotnet build --configuration Release
-
+        working-directory: MidiWriter
+        
       - name: Generate MIDI file
         run: dotnet run --configuration Release -- ${{ github.event.inputs.key }} ${{ github.event.inputs.note-lengths }} ${{ github.event.inputs.num-bars }} ${{ github.event.inputs.filename }}
-
+        working-directory: MidiWriter
+        
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
