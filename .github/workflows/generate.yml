@@ -1,0 +1,44 @@
+name: Generate MIDI File
+
+on:
+  workflow_dispatch:
+    inputs:
+      key:
+        description: 'Musical key to use for the melody'
+        required: true
+      note-lengths:
+        description: 'Lengths of notes to use (comma-separated list)'
+        required: true
+      num-bars:
+        description: 'Number of bars of music to create'
+        required: true
+      filename:
+        description: 'Name of the output MIDI file'
+        required: true
+
+jobs:
+  generate-midi-file:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Build and run MIDI writer
+      run: dotnet run --project MidiWriter.csproj -- "$KEY" "$NOTE_LENGTHS" "$NUM_BARS" "$FILENAME"
+
+      env:
+        KEY: ${{ github.event.inputs.key }}
+        NOTE_LENGTHS: ${{ github.event.inputs.note-lengths }}
+        NUM_BARS: ${{ github.event.inputs.num-bars }}
+        FILENAME: ${{ github.event.inputs.filename }}
+
+    - name: Upload MIDI file
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.inputs.filename }}
+        path: ${{ github.workspace }}/${{ github.event.inputs.filename }}
